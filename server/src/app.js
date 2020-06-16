@@ -150,11 +150,7 @@ app.get('/oauth/twitter', async (req, res) => {
       return;
     }
 
-    //const twitterUser = await Twitter.makeFromIdentifier(identity);
-    //console.log(twitterUser);
-    const twitterUser = new Twitter();
-    twitterUser.oauth_token = '98348061-brJLTo1wriE1CG1GYtRTo4UHGpmglScRMrNa8f4kX';
-    twitterUser.oauth_token_secret = 'XfgpYItbKOLuw2NN6vuSaqKl6Jj0ufPbAMWGDAmhAl8TP';
+    const twitterUser = await Twitter.makeFromIdentifier(identity);
     if (!twitterUser) {
       throw new Error('Unable to fetch user from Twitter');
     }
