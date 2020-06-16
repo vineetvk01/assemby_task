@@ -30,19 +30,21 @@ export const UserInfo = () => {
   useEffect(() => {
     currentUser({ all: true }).then((data) => {
       const { user } = data;
-      const { email, linkedAccounts } = user;
-      setEmail(email);
-      setFullName(linkedAccounts.twitter.name);
-      setLocation(linkedAccounts.twitter.location);
-      setImageURL(linkedAccounts.twitter.profile_image_url);
+      if (user) {
+        const { email, linkedAccounts } = user;
+        setEmail(email);
+        setFullName(linkedAccounts.twitter.name);
+        setLocation(linkedAccounts.twitter.location);
+        setImageURL(linkedAccounts.twitter.profile_image_url);
+      }
     })
   }, [])
 
   const logout = () => {
-    logout().then(()=>{
+    logout().then(() => {
       return <Redirect to="/login" />
     });
-  } 
+  }
 
   return (
     <Card>

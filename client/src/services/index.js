@@ -12,7 +12,7 @@ export const buildTwitterOauthURL = async () => {
   return oauth_url;
 }
 
-export const currentUser = async ({all}) => {
+export const currentUser = async ({all} = {}) => {
   try {
     let url = `${SERVER_URL}${ME_URL}`;
     if(all){

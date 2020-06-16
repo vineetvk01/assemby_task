@@ -9,7 +9,7 @@ export const routeConfig = {
   },
   dashboardPage: {
     component: DashBoard,
-    route: '/dashboard',
+    route: '/',
     exact: true
   }
 };

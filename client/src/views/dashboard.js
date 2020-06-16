@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Image, Card, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
+import { Redirect } from 'react-router-dom';
 import styled from 'styled-components';
 import { Tweet } from '../components/Tweet';
 import { UserInfo } from '../components/UserInfo';
 import { MostSharedLinks } from '../components/MostSharedLinks';
 import { UserWithMostLinks } from '../components/UserWithMostLinks';
-import { fetchTimeline } from '../services';
+import { currentUser, fetchTimeline } from '../services';
 
 const Name = styled.span`
   margin: 10px 0;
@@ -29,8 +30,15 @@ export const DashBoard = () => {
   const [total, setTotal] = useState('');
   const [topDomains, setTopDomains] = useState('');
   const [userSharedMost, setUserSharedMost] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   useEffect(()=>{
+
+    currentUser().then(({user}) => {
+        if(!user)
+        setIsLoggedIn(false);
+    });
+    
     fetchTimeline().then((data)=>{
       console.log(data);
       const { total, timeline, top_domain_shared, user_shared_most_links } = data;
@@ -40,6 +48,10 @@ export const DashBoard = () => {
       setUserSharedMost(user_shared_most_links);
     })
   }, [])
+
+  if(!isLoggedIn){
+    return <Redirect to="/login" />
+  }
 
   return(<Container fluid>
     <Row>
