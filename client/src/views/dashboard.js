@@ -69,8 +69,6 @@ export const DashBoard = () => {
             return <Tweet key={tweet.id} name={tweet.name} text={tweet.full_text} location={tweet.location} imageURL={tweet.profile_image_url} date={tweet.created_at} />
           })}
         </div>
-
-
       </Col>
     </Row>
   </Container>)
