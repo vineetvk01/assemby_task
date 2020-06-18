@@ -32,11 +32,15 @@ export const DashBoard = () => {
   const [userSharedMost, setUserSharedMost] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-  useEffect(()=>{
+  console.log('WTF');
 
+  useEffect(()=>{
     currentUser().then(({user}) => {
-        if(!user)
-        setIsLoggedIn(false);
+        if(!user){
+          setIsLoggedIn(false);
+        }else{
+          console.log(user);
+        }
     });
     
     fetchTimeline().then((data)=>{

@@ -15,10 +15,12 @@ export const buildTwitterOauthURL = async () => {
 export const currentUser = async ({all} = {}) => {
   try {
     let url = `${SERVER_URL}${ME_URL}`;
+    console.log(url);
     if(all){
       url = url + ALL;
     }
     const { data } = await axios.get(url, { withCredentials: true });
+    console.log(data);
     return data;
   } catch (e) {
     return {};

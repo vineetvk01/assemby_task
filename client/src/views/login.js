@@ -49,7 +49,7 @@ export const Login = () => {
   }
 
   if(loggedIn){
-    return <Redirect to='/dashboard' />
+    return <Redirect to='/' />
   }
   return loading ? <Loading />:<LoginWindow handleAuthentication={handleAuthentication} />
 }
