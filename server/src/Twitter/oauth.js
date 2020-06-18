@@ -32,7 +32,7 @@ const HOME_TIMELINE = {
   headers: ['oauth_signature_method', 'oauth_timestamp', 'oauth_consumer_key', 'oauth_version']
 }
 
-export class Twitter {
+export class TwitterOauth {
 
   static consumerKey = process.env.TWITTER_CONSUMER_KEY;
   static consumerSecret = process.env.TWITTER_CONSUMER_SECRET;
@@ -51,7 +51,7 @@ export class Twitter {
     const completeURL = `${TWITTER_API_URL}${request.url}`;
     const method = request.method && request.method.toUpperCase();
     const completeUnsignedRequest = `${method}&${encodeURIComponent(completeURL)}&${encodeURIComponent(oauthHeaders)}`;
-    const key = `${encodeURIComponent(Twitter.consumerSecret)}&${encodeURIComponent(access_token_secret)}`;
+    const key = `${encodeURIComponent(TwitterOauth.consumerSecret)}&${encodeURIComponent(access_token_secret)}`;
     const signedOauth = hashHMACSHA1(completeUnsignedRequest, key);
     return encodeURIComponent(base64String(signedOauth));
   }
@@ -59,9 +59,9 @@ export class Twitter {
 
   static generate(key) {
     switch (key) {
-      case 'oauth_callback': return Twitter.callback;
-      case 'oauth_consumer_key': return Twitter.consumerKey;
-      case 'oauth_nonce': return btoa(`${Twitter.consumerKey}${Math.floor(Date.now() / 1000)}`)
+      case 'oauth_callback': return TwitterOauth.callback;
+      case 'oauth_consumer_key': return TwitterOauth.consumerKey;
+      case 'oauth_nonce': return btoa(`${TwitterOauth.consumerKey}${Math.floor(Date.now() / 1000)}`)
       case 'oauth_timestamp': return Math.floor(Date.now() / 1000);
       case 'oauth_version': return '1.0';
       case 'oauth_signature_method': return "HMAC-SHA1";
@@ -71,15 +71,15 @@ export class Twitter {
 
   static makeOauthToken = async function () {
     try {
-      const oauth_nonce = encodeURIComponent(Twitter.generate('oauth_nonce'));
+      const oauth_nonce = encodeURIComponent(TwitterOauth.generate('oauth_nonce'));
       const _auth_String = REQUEST_TOKEN.headers.map((key) => {
-        return `${key}=${encodeURIComponent(Twitter.generate(key))}`
+        return `${key}=${encodeURIComponent(TwitterOauth.generate(key))}`
       })
       _auth_String.push(`oauth_nonce=${oauth_nonce}`);
 
-      const oauth_signature = Twitter.signOauthHeaders(REQUEST_TOKEN, _auth_String.sort().join('&'));
+      const oauth_signature = TwitterOauth.signOauthHeaders(REQUEST_TOKEN, _auth_String.sort().join('&'));
       const auth_String = REQUEST_TOKEN.headers.map((key) => {
-        return `${key}="${encodeURIComponent(Twitter.generate(key))}"`
+        return `${key}="${encodeURIComponent(TwitterOauth.generate(key))}"`
       })
       auth_String.push(`oauth_signature="${oauth_signature}"`);
       auth_String.push(`oauth_nonce="${oauth_nonce}"`);
@@ -106,18 +106,18 @@ export class Twitter {
 
   static makeFromIdentifier = async function (identity) {
     try {
-      const oauth_nonce = encodeURIComponent(Twitter.generate('oauth_nonce'));
+      const oauth_nonce = encodeURIComponent(TwitterOauth.generate('oauth_nonce'));
       const _auth_String = REQUEST_TOKEN.headers.map((key) => {
-        return `${key}=${encodeURIComponent(Twitter.generate(key))}`
+        return `${key}=${encodeURIComponent(TwitterOauth.generate(key))}`
       })
       _auth_String.push(`oauth_nonce=${oauth_nonce}`);
       _auth_String.push(`oauth_verifier=${identity.oauth_verifier}`);
       _auth_String.push(`oauth_token=${identity.oauth_token}`);
 
-      const oauth_signature = Twitter.signOauthHeaders(ACCESS_TOKEN, _auth_String.sort().join('&'));
+      const oauth_signature = TwitterOauth.signOauthHeaders(ACCESS_TOKEN, _auth_String.sort().join('&'));
 
       const auth_String = REQUEST_TOKEN.headers.map((key) => {
-        return `${key}="${encodeURIComponent(Twitter.generate(key))}"`
+        return `${key}="${encodeURIComponent(TwitterOauth.generate(key))}"`
       })
       auth_String.push(`oauth_signature="${oauth_signature}"`);
       auth_String.push(`oauth_nonce="${oauth_nonce}"`);
@@ -132,28 +132,28 @@ export class Twitter {
 
       const { data } = response;
       const { screen_name, user_id, oauth_token, oauth_token_secret } = objectFromString(data);
-      return new Twitter(screen_name, user_id, oauth_token, oauth_token_secret);
+      return new TwitterOauth(screen_name, user_id, oauth_token, oauth_token_secret);
 
     } catch (e) {
-      console.log('error')
+      console.log('error', e)
       console.log(e.response.data || e);
     }
   }
 
   fetchAccountInfo = async function () {
     try {
-      const oauth_nonce = encodeURIComponent(Twitter.generate('oauth_nonce'));
+      const oauth_nonce = encodeURIComponent(TwitterOauth.generate('oauth_nonce'));
       const _auth_String = VERIFY_CREDENTIALS.headers.map((key) => {
-        return `${key}=${encodeURIComponent(Twitter.generate(key))}`
+        return `${key}=${encodeURIComponent(TwitterOauth.generate(key))}`
       })
       _auth_String.push(`oauth_nonce=${oauth_nonce}`);
       _auth_String.push(`oauth_token=${this.oauth_token}`);
       _auth_String.push(`include_email=true`);
 
-      const oauth_signature = Twitter.signOauthHeaders(VERIFY_CREDENTIALS, _auth_String.sort().join('&'), this.oauth_token_secret);
+      const oauth_signature = TwitterOauth.signOauthHeaders(VERIFY_CREDENTIALS, _auth_String.sort().join('&'), this.oauth_token_secret);
       //console.log('Signed Oauth: ', oauth_signature);
       const auth_String = VERIFY_CREDENTIALS.headers.map((key) => {
-        return `${key}="${encodeURIComponent(Twitter.generate(key))}"`
+        return `${key}="${encodeURIComponent(TwitterOauth.generate(key))}"`
       })
       auth_String.push(`oauth_signature="${oauth_signature}"`);
       auth_String.push(`oauth_nonce="${oauth_nonce}"`);
@@ -185,9 +185,9 @@ export class Twitter {
     console.log(' Going to make API call for MAX_ID, ', max_id)
     let max_id_string = '';
     try {
-      const oauth_nonce = encodeURIComponent(Twitter.generate('oauth_nonce'));
+      const oauth_nonce = encodeURIComponent(TwitterOauth.generate('oauth_nonce'));
       const _auth_String = HOME_TIMELINE.headers.map((key) => {
-        return `${key}=${encodeURIComponent(Twitter.generate(key))}`
+        return `${key}=${encodeURIComponent(TwitterOauth.generate(key))}`
       })
       _auth_String.push(`oauth_nonce=${oauth_nonce}`);
       _auth_String.push(`oauth_token=${this.oauth_token}`);
@@ -198,10 +198,10 @@ export class Twitter {
         _auth_String.push(max_id_string);
       }
 
-      const oauth_signature = Twitter.signOauthHeaders(HOME_TIMELINE, _auth_String.sort().join('&'), this.oauth_token_secret);
+      const oauth_signature = TwitterOauth.signOauthHeaders(HOME_TIMELINE, _auth_String.sort().join('&'), this.oauth_token_secret);
       //console.log('Signed Oauth: ', oauth_signature);
       const auth_String = HOME_TIMELINE.headers.map((key) => {
-        return `${key}="${encodeURIComponent(Twitter.generate(key))}"`
+        return `${key}="${encodeURIComponent(TwitterOauth.generate(key))}"`
       })
       auth_String.push(`oauth_signature="${oauth_signature}"`);
       auth_String.push(`oauth_nonce="${oauth_nonce}"`);
@@ -221,7 +221,7 @@ export class Twitter {
     }
   }
 
-  fetchFilteredTimeLine = async function ({ days = 0 }) {
+  fetchFilteredTweets = async function ({ days = 0 }) {
     const requiredDaysBack = new Date();
     requiredDaysBack.setDate(requiredDaysBack.getDate() - days);
 

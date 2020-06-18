@@ -20,7 +20,7 @@ const Email = styled.p`
   margin: 0px 0;
 `;
 
-export const UserInfo = () => {
+export const UserInfo = ({ updateLoggedIn }) => {
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -40,8 +40,9 @@ export const UserInfo = () => {
     })
   }, [])
 
-  const logout = () => {
+  const logoutUser = () => {
     logout().then(() => {
+      updateLoggedIn(false)
       return <Redirect to="/login" />
     });
   }
@@ -63,7 +64,7 @@ export const UserInfo = () => {
           <br />
           <Row>
             <Col xs={12}>
-              <Button variant="outline-primary" onClick={logout} block> Logout </Button>
+              <Button variant="outline-primary" onClick={logoutUser} block> Logout </Button>
             </Col>
           </Row>
         </Container>

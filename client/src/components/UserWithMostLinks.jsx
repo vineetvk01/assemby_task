@@ -17,25 +17,15 @@ const User = styled.p`
   text-transform: uppercase;
 `
 
-export const UserWithMostLinks = ({ userSharedMostLinks }) => {
-
-  const sortable = [];
-
-  for (const user in userSharedMostLinks) {
-    sortable.push([user, userSharedMostLinks[user]]);
-  }
-
-  sortable.sort(function (a, b) {
-    return b[1] - a[1];
-  });
+export const UserWithMostLinks = ({ userSharedMostLinks = [] }) => {
 
   return (
     <Card>
       <Card.Body style={{ padding: '10px' }}>
         <Title>User shared most links</Title>
         <div>
-          {sortable.slice(0,5).map((userLink)=>{
-            return <User>{userLink[0]} ( {userLink[1]} )</User>
+          {userSharedMostLinks.map((userLink) => {
+            return <User>{userLink.name} ( {userLink.count} )</User>
           })}
         </div>
       </Card.Body>

@@ -1,4 +1,4 @@
-import { updateOrCreateTimeline, fetchByUserId, fetchQuery } from './db';
+import { createOrUpdateTweets, fetchTweetsByUserId, fetchAllURLs, groupByUserName } from './db';
 
 //Params required
 const params = new Set();
@@ -18,10 +18,14 @@ user_params.add('profile_image_url');
 
 export class Timeline {
 
-  constructor({ id, userId, timeline }) {
-    this.id = id;
+  constructor({ userId, tweets = [], total }) {
     this.userId = userId;
-    this.timeline = timeline;
+    this.tweets = tweets.map((_tweet) => {
+      var tweet = Object.assign({}, _tweet);
+      tweet.byUser = this.userId;
+      return tweet;
+    })
+    this.total = total;
   }
 
   static filterTimeLine(timeline) {
@@ -52,14 +56,14 @@ export class Timeline {
   }
 
   save = async function () {
-    await updateOrCreateTimeline(this);
+    const tweetsInserted = await createOrUpdateTweets(this.tweets);
+    this.tweets = tweetsInserted;
   }
 
-  load = async function () {
-    const fetchFromDb = await fetchByUserId(this.userId);
-    if (fetchFromDb == null) return;
-    this.id = fetchFromDb._id;
-    this.timeline = fetchFromDb.timeline;
+  load = async function (query) {
+    const { tweets, total } = await fetchTweetsByUserId(this.userId, query);
+    this.tweets = tweets;
+    this.total = total;
   }
 
   query = async function ({ hashtags, location }) {
@@ -90,68 +94,42 @@ export class Timeline {
     }
   }
 
-  isAPIFetchRequired = function ({ days = 0 }) {
-    const timeline = this.timeline;
-    if (timeline == null || timeline.length < 1) {
-      return true;
-    }
-    const requiredDate = new Date();
-    requiredDate.setDate(requiredDate.getDate() - days);
-    requiredDate.setHours(0);
-    requiredDate.setMinutes(0);
-    requiredDate.setSeconds(0);
+  calculateMostDomainShared = async function () {
+    const urlsArrayFetched = await fetchAllURLs();
 
-    const lastTweet = timeline[timeline.length - 1];
-    console.log(lastTweet.created_at);
-    const lastDateTweet = new Date(lastTweet.created_at)
-    lastDateTweet.setHours(0);
-    lastDateTweet.setMinutes(0);
-    lastDateTweet.setSeconds(0);
-    console.log('--------------------')
-    console.log('Required Date', requiredDate.toUTCString())
-    console.log('Last Tweet Date', lastDateTweet.toUTCString())
-    console.log('call should be made ? ', lastDateTweet.getTime() > requiredDate.getTime())
-    console.log('--------------------')
-    return lastDateTweet.getTime() > requiredDate.getTime();
-  }
+    const urls = urlsArrayFetched.reduce((acc, urlArray) => {
+      const { urls } = urlArray;
+      return [...acc, ...urls];
+    }, []);
 
-  calculateMostDomainShared = function () {
-    const tweets = this.timeline;
-    const domain = {};
-
-    tweets.forEach(tweet => {
-      const { urls } = tweet;
-      urls.forEach((url) => {
-        const { display_url } = url;
-        let domainName = display_url;
-        if(display_url.includes('/')){
-          domainName = display_url.split('/')[0];
-        }
-        if(domain[domainName]){
-          domain[domainName] = domain[domainName] + 1;
-        }else{
-          domain[domainName] = 1;
-        }
-      })
-    });
-
-    return domain;
-  }
-
-  calculateUserSharedMostLinks = function(){
-    const tweets = this.timeline;
-    const user = {};
-
-    tweets.forEach(tweet => {
-      const { name } = tweet;
-      if(user[name]){
-        user[name] = user[name] + 1;
-      }else{
-        user[name] = 1;
+    const domainCounts = urls.reduce((domains, url) => {
+      const { display_url } = url;
+      let domainName = display_url;
+      if (display_url.includes('/')) {
+        domainName = display_url.split('/')[0];
       }
+      if (domains[domainName]) {
+        domains[domainName] = domains[domainName] + 1;
+      } else {
+        domains[domainName] = 1;
+      }
+      return domains;
+    }, {});
+
+    let sortable = [];
+    for (let domain in domainCounts) {
+      sortable.push([domain, domainCounts[domain]]);
+    }
+
+    sortable.sort(function (a, b) {
+      return b[1] - a[1];
     });
 
-    return user;
+    return sortable;
+  }
+
+  calculateUserSharedMostLinks = function () {
+    return groupByUserName();
   }
 
 }

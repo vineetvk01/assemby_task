@@ -28,7 +28,6 @@ export const Login = () => {
 
   useEffect(()=>{
     currentUser().then((user)=>{
-      console.log(user);
       if(Object.keys(user).length > 0){
         setLoggedIn(true);
       }
@@ -43,7 +42,11 @@ export const Login = () => {
     let timer = setInterval(function() {   
       if(opened.closed) {  
           clearInterval(timer);  
-          console.log('This is closed ....');
+          currentUser().then((user)=>{
+            if(Object.keys(user).length > 0){
+              setLoggedIn(true);
+            }
+          });
       }  
     }, 1000); 
   }

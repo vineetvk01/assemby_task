@@ -6,7 +6,7 @@ import { Tweet } from '../components/Tweet';
 import { UserInfo } from '../components/UserInfo';
 import { MostSharedLinks } from '../components/MostSharedLinks';
 import { UserWithMostLinks } from '../components/UserWithMostLinks';
-import { currentUser, fetchTimeline } from '../services';
+import { currentUser, fetchTimeline, analysis } from '../services';
 
 const Name = styled.span`
   margin: 10px 0;
@@ -27,12 +27,11 @@ const Title = styled.p`
 export const DashBoard = () => {
 
   const [timeline, setTimeline] = useState([]);
-  const [total, setTotal] = useState('');
-  const [topDomains, setTopDomains] = useState('');
-  const [userSharedMost, setUserSharedMost] = useState('');
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [topDomains, setTopDomains] = useState([]);
+  const [userSharedMost, setUserSharedMost] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-
-  console.log('WTF');
 
   useEffect(()=>{
     currentUser().then(({user}) => {
@@ -44,12 +43,16 @@ export const DashBoard = () => {
     });
     
     fetchTimeline().then((data)=>{
-      console.log(data);
-      const { total, timeline, top_domain_shared, user_shared_most_links } = data;
-      setTimeline(timeline);
-      setTotal(total);
-      setTopDomains(top_domain_shared);
+      const { total_count, tweets, page } = data;
+      setTimeline(tweets);
+      setTotal(total_count);
+      setPage(page);
+    })
+
+    analysis().then((data)=>{
+      const { user_shared_most_links, top_domain_shared } = data;
       setUserSharedMost(user_shared_most_links);
+      setTopDomains(top_domain_shared);
     })
   }, [])
 
@@ -60,11 +63,11 @@ export const DashBoard = () => {
   return(<Container fluid>
     <Row>
       <Col xs lg={3}>
-        <UserInfo />
+        <UserInfo updateLoggedIn={setIsLoggedIn} />
         <br />
-        <UserWithMostLinks userSharedMostLinks={userSharedMost} />
+        <UserWithMostLinks userSharedMostLinks={userSharedMost}/>
         <br />
-        <MostSharedLinks links={topDomains} />
+        <MostSharedLinks domains={topDomains} />
 
       </Col>
       <Col xs lg={9}>

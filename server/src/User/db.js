@@ -8,6 +8,7 @@ export const updateOrCreate = async ( user ) => {
   const update = {
     "$set": { linkedAccounts : user.linkedAccounts }
   };
+  
   const data = await db.collection('users').findOneAndUpdate(query, update, config);
   const userInDb = {...data.value};
   userInDb.id = data.value && data.value._id;

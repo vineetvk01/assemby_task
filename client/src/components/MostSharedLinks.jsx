@@ -17,24 +17,15 @@ const Link = styled.p`
   text-transform: uppercase;
 `
 
-export const MostSharedLinks = ({ links }) => {
-  const sortable = [];
-
-  for (const link in links) {
-    sortable.push([link, links[link]]);
-  }
-
-  sortable.sort(function (a, b) {
-    return b[1] - a[1];
-  });
+export const MostSharedLinks = ({domains = []}) => {
 
   return (
     <Card>
       <Card.Body style={{ padding: '10px' }}>
         <Title>User shared most links</Title>
         <div>
-          {sortable.map((sharedLink)=>{
-            return <Link>{sharedLink[0]} ( {sharedLink[1]} )</Link>
+          {domains.map((domain)=>{
+            return <Link>{domain[0]} ( {domain[1]} )</Link>
           })}
         </div>
       </Card.Body>

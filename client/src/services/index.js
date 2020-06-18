@@ -1,25 +1,31 @@
 import axios from 'axios';
 import { SERVER_URL } from '../constants';
 
+const instance = axios.create({
+  withCredentials: true
+})
+
 const OAUTH_URL = '/twitter/oauth_token';
 const ME_URL = '/user/me';
 const ALL = '/all';
 const TIMELINE = '/twitter/timeline';
+const TIMELINE_SYNC = '/twitter/timeline/sync';
 const LOGOUT = '/user/logout';
+const ANALYSIS = '/twitter/timeline/analysis';
 
 export const buildTwitterOauthURL = async () => {
-  const { data: { oauth_url } } = await axios.get(`${SERVER_URL}${OAUTH_URL}`, { withCredentials: true });
+  const { data: { oauth_url } } = await instance.get(`${SERVER_URL}${OAUTH_URL}`);
   return oauth_url;
 }
 
-export const currentUser = async ({all} = {}) => {
+export const currentUser = async ({ all } = {}) => {
   try {
     let url = `${SERVER_URL}${ME_URL}`;
     console.log(url);
-    if(all){
+    if (all) {
       url = url + ALL;
     }
-    const { data } = await axios.get(url, { withCredentials: true });
+    const { data } = await instance.get(url);
     console.log(data);
     return data;
   } catch (e) {
@@ -28,11 +34,16 @@ export const currentUser = async ({all} = {}) => {
 }
 
 export const fetchTimeline = async () => {
-  const { data } = await axios.get(`${SERVER_URL}${TIMELINE}`, { withCredentials: true });
+  const { data } = await instance.get(`${SERVER_URL}${TIMELINE}`);
   return data;
 }
 
 export const logout = async () => {
-  const { data } = await axios.post(`${SERVER_URL}${LOGOUT}`, { withCredentials: true });
+  const { data } = await instance.get(`${SERVER_URL}${LOGOUT}`, {});
+  return data;
+}
+
+export const analysis = async () => {
+  const { data } = await instance.get(`${SERVER_URL}${ANALYSIS}`);
   return data;
 }
