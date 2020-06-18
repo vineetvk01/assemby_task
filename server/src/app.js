@@ -154,9 +154,10 @@ app.get('/oauth/twitter', async (req, res) => {
     if (!twitterUser) {
       throw new Error('Unable to fetch user from Twitter');
     }
+    console.log('User is fetched from the account')
     const user = await User.makeFromTwitter(twitterUser);
     user.toString();
-    //console.log('User For Signed', user.toString());
+    console.log('User To be Signed', user.toString());
     res = attachTokenToResponse(res, user.toSession());
     res.sendStatus(200);
 

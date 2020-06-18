@@ -32,11 +32,15 @@ export const DashBoard = () => {
   const [userSharedMost, setUserSharedMost] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-  useEffect(()=>{
+  console.log('WTF');
 
+  useEffect(()=>{
     currentUser().then(({user}) => {
-        if(!user)
-        setIsLoggedIn(false);
+        if(!user){
+          setIsLoggedIn(false);
+        }else{
+          console.log(user);
+        }
     });
     
     fetchTimeline().then((data)=>{
@@ -69,8 +73,6 @@ export const DashBoard = () => {
             return <Tweet key={tweet.id} name={tweet.name} text={tweet.full_text} location={tweet.location} imageURL={tweet.profile_image_url} date={tweet.created_at} />
           })}
         </div>
-
-
       </Col>
     </Row>
   </Container>)
