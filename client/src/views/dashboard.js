@@ -48,7 +48,6 @@ export const DashBoard = () => {
       const { total_count, tweets, page } = data;
       setTimeline(tweets);
       setTotal(parseInt(total_count));
-      setPage(parseInt(page));
     })
 
     analysis().then((data) => {
@@ -94,13 +93,13 @@ export const DashBoard = () => {
         </Col>
         <Col xs lg={9}>
           <Row>
-            <Col xs lg={4}>
+            <Col xs lg={5}>
               <Button variant="outline-primary" onClick={syncTwitter} style={{ marginRight: '5px' }}> Sync Now! </Button>
               <Button variant="outline-info" onClick={() => setPage((page) => page > 1 ? page - 1 : page)} style={{ marginRight: '5px' }} > Prev </Button>
               <span style={{ fontSize: '20px', margin: '0 5px' }}>{page}</span>
               <Button variant="outline-info" onClick={() => setPage((page) => next() ? page + 1 : page)} style={{ marginRight: '5px' }}> Next </Button>
             </Col>
-            <Col xs lg={8}>  
+            <Col xs lg={7}>  
             <InputGroup style={{ width: '100%' }}>
                 <InputGroup.Prepend>
                   <InputGroup.Text id="basic-addon1">♯</InputGroup.Text>

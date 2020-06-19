@@ -57,6 +57,6 @@ export const analysis = async () => {
 }
 
 export const sync = async () => {
-  const { data } = await instance.get(`${SERVER_URL}${TIMELINE_SYNC}`);
+  const { data } = await instance.get(`${SERVER_URL}${TIMELINE_SYNC}/7`);
   return data;
 }
