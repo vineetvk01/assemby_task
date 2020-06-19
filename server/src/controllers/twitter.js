@@ -53,6 +53,7 @@ route.get('/timeline', mustBeLoggedIn, async (req, res) => {
   const { hashtags, location } = query;
 
   if (hashtags) {
+    console.log(hashtags);
     query.hashtags = hashtags.trim().split(',');
   }
 
@@ -60,13 +61,15 @@ route.get('/timeline', mustBeLoggedIn, async (req, res) => {
     query.location = decodeURIComponent(location);
   }
 
+  console.log('Page : ',query.page)
   const timeline = new Timeline({ userId: user.id });
   await timeline.load(query);
+  console.log('Page After: ',query.page)
 
   res.status(200).send({
     status: "success",
     tweets: timeline.tweets,
-    page: query.page | 1,
+    page: query.page || 1,
     total_count: timeline.total
   })
 });

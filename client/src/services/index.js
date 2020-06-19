@@ -33,8 +33,16 @@ export const currentUser = async ({ all } = {}) => {
   }
 }
 
-export const fetchTimeline = async () => {
-  const { data } = await instance.get(`${SERVER_URL}${TIMELINE}`);
+export const fetchTimeline = async ({page = 1, count = 50, hashtags, location}) => {
+  let url = `${SERVER_URL}${TIMELINE}?page=${page}&count=${count}`;
+  if(hashtags && hashtags.length>1){
+    url = url + `&hashtags=${encodeURIComponent(hashtags)}`;
+  }
+  if(location && location.length>1){
+    url = url + `&location=${encodeURIComponent(location)}`;
+  }
+  const { data } = await instance.get(url);
+
   return data;
 }
 
@@ -45,5 +53,10 @@ export const logout = async () => {
 
 export const analysis = async () => {
   const { data } = await instance.get(`${SERVER_URL}${ANALYSIS}`);
+  return data;
+}
+
+export const sync = async () => {
+  const { data } = await instance.get(`${SERVER_URL}${TIMELINE_SYNC}`);
   return data;
 }
