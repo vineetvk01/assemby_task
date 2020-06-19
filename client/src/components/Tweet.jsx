@@ -26,6 +26,10 @@ const Date = styled.span`
 `;
 
 export const Tweet = ({name, text, location, imageURL, date}) => {
+  if(location === ''){
+    location = 'NA';
+  }
+
   return (
     <Card body style={{marginBottom: "15px"}}>
       <Container fluid>

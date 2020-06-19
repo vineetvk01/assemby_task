@@ -139,6 +139,7 @@ export const DashBoard = () => {
               console.log(tweet);
               return <Tweet key={tweet._id} name={tweet.name} text={tweet.full_text} location={tweet.location} imageURL={tweet.profile_image_url} date={tweet.created_at} />
             })}
+            {timeline.length === 0 ? <div style={{textAlign: 'center'}}>No Results Found !</div> : <></>}
           </div>
         </Col>
       </Row>

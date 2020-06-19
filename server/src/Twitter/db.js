@@ -34,7 +34,7 @@ export const fetchTweetsByUserId = async (userId, { page = 1, count = 50, locati
   const db = await makeDb();
   const query = { byUser: userId };
   if (location) {
-    query.location = location
+    query.location = location;
   }
   if (hashtags && hashtags.length > 0) {
     query.hashtags = { $elemMatch: { text: { $in: hashtags } } };
@@ -42,7 +42,7 @@ export const fetchTweetsByUserId = async (userId, { page = 1, count = 50, locati
   const skip = (page - 1) * count;
   console.log(skip, count);
 
-  const data = await db.collection('timeline').find(query).skip(skip).limit(parseInt(count));
+  const data = await db.collection('timeline').find(query).sort({_id: -1}).skip(skip).limit(parseInt(count));
   const tweets = await data.toArray();
 
   const total = await db.collection('timeline').find(query).count();
